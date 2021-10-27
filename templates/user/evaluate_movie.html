@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>电影评价</title>
+		<link rel="stylesheet" type="text/css" href="/static/css/identify.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/account.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/personal_style.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/control_index.css" />
+		<script type="text/javascript" src="/static/js/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="/static/js/layer/layer.js"></script>
+		<script type="text/javascript" src="/static/js/haidao.offcial.general.js"></script>
+		<script type="text/javascript" src="/static/js/select.js"></script>
+		<script type="text/javascript" src="/static/js/haidao.validate.js"></script>
+	</head>
+	<body>
+		<div class="view-topbar">
+			<div class="topbar-console">
+				<div class="tobar-head fl">
+					<a href="#" class="topbar-logo fl">
+					<span><img src="/static/images/logo.png" width="20" height="20"/></span>
+					</a>
+					<a href="/movie/index" class="topbar-home-link topbar-btn text-center fl"><span>电影网站</span></a>
+				</div>
+			</div>
+			<div class="topbar-info">
+				<ul class="fr">
+					<li class="fl topbar-info-item">
+					<div class="dropdown">
+						<a href="#" class="topbar-btn">
+						<span class="fl text-normal">{{ user.username }}</span>
+						<span class="icon-arrow-down"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="/user/logout">退出</a></li>
+						</ul>
+					</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="view-body">
+			<div class="view-sidebar">
+				<div class="sidebar-content">
+					<div class="sidebar-nav">
+						<div class="sidebar-title">
+							<a href="#">
+								<span class="icon"><b class="fl icon-arrow-down"></b></span>
+								<span class="text-normal">用户中心</span>
+							</a>
+						</div>
+						<ul class="sidebar-trans">
+							<li>
+								<a href="/user/personal_index">
+									<b class="sidebar-icon"><img src="/static/images/icon_order.png" width="16" height="16" /></b>
+									<span class="text-normal">个人主页</span>
+								</a>
+							</li>
+							<li>
+								<a href="/user/personal_info">
+									<b class="sidebar-icon"><img src="/static/images/icon_cost.png" width="16" height="16" /></b>
+									<span class="text-normal">账号管理</span>
+								</a>
+							</li>
+							<li>
+								<a href="/user/personal_history">
+									<b class="sidebar-icon"><img src="/static/images/icon_authentication.png" width="16" height="16" /></b>
+									<span class="text-normal">历史记录</span>
+								</a>
+							</li>
+							<li>
+								<a href="/user/show_evaluate">
+									<b class="sidebar-icon"><img src="/static/images/icon_news.png" width="16" height="16" /></b>
+									<span class="text-normal">用户评分</span>
+								</a>
+							</li>
+							<li>
+								<a href="/user/recommend_movie">
+									<b class="sidebar-icon"><img src="/static/images/icon_gold.png" width="16" height="16" /></b>
+									<span class="text-normal">用户推荐</span>
+								</a>
+							</li>
+
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="view-product">
+				<div class="authority">
+					<div class="authority-head">
+						<div class="manage-head">
+							<h6 class="layout padding-left manage-head-con">已观看电影评分
+							<span class="fr text-small text-normal padding-top">当前时间：{% now "Y-m-d" %}</span>
+							</h6>
+						</div>
+					</div>
+					<div class="authority-content">
+						<div class="list-content show">
+							<div class="offcial-table tr-border margin-big-top clearfix">
+								<div class="tr-th clearfix">
+									<div class="th w15">
+										id
+									</div>
+									<div class="th w20">
+										电影(电视)名
+									</div>
+									<div class="th w15">
+										导演
+									</div>
+									<div class="th w15">
+										类型
+									</div>
+									<div class="th w20">
+										评分
+									</div>
+									<div class="th w15">
+										操作
+									</div>
+								</div>
+								{% for time,star,video in evaluate_info %}
+									<div class="tr clearfix border-bottom-none">
+									<div class="td w15">
+										{{ video.id }}
+									</div>
+									<div class="td w20">
+										{{ video.name }}
+									</div>
+									<div class="td w15">
+										{{ video.director }}
+									</div>
+									<div class="td w15">
+										{{ video.type }}
+									</div>
+									{% if star == '' %}
+										<div class="td w20">
+											<input style="height: 21px;border: 1px solid;" type="number" id="{{ time }}" oninput="if(value<0)value=0;if(value>5)value=5" />
+										</div>
+										<div class="td w15">
+											<button class="button-word2" onclick="mark({{time}})">评分</button>
+										</div>
+									{% else %}
+										<div class="td w20">
+											{{ star }}
+										</div>
+										<div class="td w15">
+											<button disabled>已评</button>
+										</div>
+									{% endif %}
+								</div>
+								{% endfor %}
+							</div>
+						</div>
+						<div class="show-page padding-big-right">
+							<div class="page">
+								<div class="page">
+									<ul class="offcial-page margin-top margin-big-right">
+										<li>共<em class="margin-small-left margin-small-right">{{ num }}</em>条观看记录</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			function mark(time, star) {
+				star = $("#"+time).val()
+				$.ajax({
+					'url': '/user/mark_movie',
+					'type': 'get',
+					'dataType': 'json',
+					'data': {'time': time, 'star': star},
+					'success':function (data) {
+						if(data.res == 1){
+							alert('您已成功评分')
+							location.href = '/user/show_evaluate'
+						}
+					}
+				})
+			}
+		</script>
+		<script>
+			$(".sidebar-title").live('click', function() {
+				if ($(this).parent(".sidebar-nav").hasClass("sidebar-nav-fold")) {
+					$(this).next().slideDown(200);
+					$(this).parent(".sidebar-nav").removeClass("sidebar-nav-fold");
+				} else {
+					$(this).next().slideUp(200);
+					$(this).parent(".sidebar-nav").addClass("sidebar-nav-fold");
+				}
+			});
+		</script>
+	</body>
+
+</html>

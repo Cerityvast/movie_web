@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>用户信息</title>
+		<link rel="stylesheet" type="text/css" href="/static/css/identify.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/account.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/personal_style.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/control_index.css" />
+		<script type="text/javascript" src="/static/js/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="/static/js/jquery.leanModal.min.js"></script>
+		<script type="text/javascript" src="/static/js/layer/layer.js"></script>
+		<script type="text/javascript" src="/static/js/haidao.offcial.general.js"></script>
+		<script type="text/javascript" src="/static/js/select.js"></script>
+		<script type="text/javascript" src="/static/js/haidao.validate.js"></script>
+	</head>
+	<style type="text/css">
+        #lean_overlay { position: fixed; z-index: 100; top: 0px; left: 0px; height: 100%; width: 100%; background: #000; display: none; }
+        #OpenWindow,#OpenWindow1 { background: none repeat scroll 0 0 #FFFFFF; border-radius: 5px 5px 5px 5px; box-shadow: 0 0 4px rgba(0, 0, 0, 0.7); display: none; padding-bottom: 2px; width: 404px; z-index: 11000; left: 50%; margin-left: -202px; opacity: 1; position: fixed; top: 200px; }
+        #OpenWindow-header,#OpenWindow-header1 { background: url("/static/images/hd-bg.png") repeat scroll 0 0 transparent; border-bottom: 1px solid #CCCCCC; border-top-left-radius: 3px; border-top-right-radius: 3px; padding: 1px 14px 1px; }
+        .modal_close { background: url("/static/images/modal_close.png") repeat scroll 0 0 transparent; display: block; height: 14px; position: absolute; right: 12px; top: 12px; width: 14px; z-index: 2; }
+        body { font-size: 13px; }
+        #OpenWindow .txt-fld { border-bottom: 1px solid #EEEEEE; padding: 14px 20px; position: relative; text-align: right; width: 364px; }
+        #OpenWindow .txt-fld input { background: none repeat scroll 0 0 #F7F7F7; border-color: #CCCCCC #E7E6E6 #E7E6E6 #CCCCCC; border-radius: 4px 4px 4px 4px; border-style: solid; border-width: 1px; color: #222222; font-family: "Helvetica Neue"; font-size: 1.2em; outline: medium none; padding: 8px; width: 244px; }
+        #OpenWindow .txt-fld input.good_input { background: no-repeat scroll 236px center #DEF5E1; }
+        #OpenWindow .btn-fld { overflow: hidden; padding: 12px 20px 12px 130px; width: 254px; }
+		#OpenWindow1 .txt-fld { border-bottom: 1px solid #EEEEEE; padding: 14px 20px; position: relative; text-align: right; width: 364px; }
+        #OpenWindow1 .txt-fld input { background: none repeat scroll 0 0 #F7F7F7; border-color: #CCCCCC #E7E6E6 #E7E6E6 #CCCCCC; border-radius: 4px 4px 4px 4px; border-style: solid; border-width: 1px; color: #222222; font-family: "Helvetica Neue"; font-size: 1.2em; outline: medium none; padding: 8px; width: 244px; }
+        #OpenWindow1 .txt-fld input.good_input { background: no-repeat scroll 236px center #DEF5E1; }
+        #OpenWindow1 .btn-fld { overflow: hidden; padding: 12px 20px 12px 130px; width: 254px; }
+        button { background: none repeat scroll 0 0 #3F9D4A; border: medium none; border-radius: 4px 4px 4px 4px; color: #FFFFFF; float: right; font-family: Verdana; font-size: 13px; font-weight: bold; overflow: visible; padding: 7px 10px; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4); width: auto; }
+    </style>
+	<script type="text/javascript">
+		$(document).ready(function () {
+            $('a[rel*=leanModal]').leanModal({ top: 200, closeButton: ".modal_close" });
+        });
+	</script>
+	<script>
+		$(function () {
+			username = '{{ user.username }}'
+			csrf = $('input[name="csrfmiddlewaretoken"]').val();
+			$('#Modify_pass').click(function () {
+				old_pass = $('#old_pass').val()
+				new_pass = $('#new_pass').val()
+				ensure_pass = $('#ensure_pass').val()
+				if (old_pass != {{ user.password }}){
+					$('#message').html("旧密码填写错误")
+				} else{
+					if(new_pass != ensure_pass){
+						$('#message').html("两次填写密码不一致")
+					} else{
+						$('#OpenWindow').hide()
+						$.ajax({
+							'url': '/user/modify_info',
+							'type': 'post',
+							'dataType': 'json',
+							'data': {'username': username, 'new_pass': new_pass, 'csrfmiddlewaretoken': csrf},
+							'success':function (data) {
+								if(data.res == 1){
+									alert("修改密码成功，请重新登录")
+									location.href = '/user/logout'
+								}
+							}
+						})
+						$('#old_pass').val("")
+						$('#new_pass').val("")
+						$('#ensure_pass').val("")
+						$('#message').empty()
+					}
+				}
+			})
+			$('#Modify_email').click(function () {
+				email = $('#email').val()
+				$('#OpenWindow1').hide()
+				$.ajax({
+					'url': '/user/modify_info',
+					'type': 'post',
+					'dataType': 'json',
+					'data': {'username': username, 'email': email, 'csrfmiddlewaretoken': csrf},
+					'success':function (data) {
+						if(data.res == 1){
+							alert("修改邮箱成功")
+							location.href = '/user/personal_info'
+						}
+					}
+				})
+			})
+		})
+	</script>
+	<body>
+		{% csrf_token %}
+		<div class="view-topbar">
+			<div class="topbar-console">
+				<div class="tobar-head fl">
+					<a href="#" class="topbar-logo fl">
+					<span><img src="/static/images/logo.png" width="20" height="20"/></span>
+					</a>
+					<a href="/movie/index" class="topbar-home-link topbar-btn text-center fl"><span>电影网站</span></a>
+				</div>
+			</div>
+			<div class="topbar-info">
+				<ul class="fr">
+					<li class="fl topbar-info-item">
+					<div class="dropdown">
+						<a href="#" class="topbar-btn">
+						<span class="fl text-normal">{{ user.username }}</span>
+						<span class="icon-arrow-down"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="/user/logout">退出</a></li>
+						</ul>
+					</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="view-body">
+			<div class="view-sidebar">
+				<div class="sidebar-content">
+					<div class="sidebar-nav">
+						<div class="sidebar-title">
+							<a href="#">
+								<span class="icon"><b class="fl icon-arrow-down"></b></span>
+								<span class="text-normal">用户中心</span>
+							</a>
+						</div>
+						<ul class="sidebar-trans">
+							<a href="/user/personal_index">
+									<b class="sidebar-icon"><img src="/static/images/icon_order.png" width="16" height="16" /></b>
+									<span class="text-normal">个人主页</span>
+								</a>
+							<li>
+								<a href="/user/personal_info">
+									<b class="sidebar-icon"><img src="/static/images/icon_cost.png" width="16" height="16" /></b>
+									<span class="/personal_info">账号管理</span>
+								</a>
+							</li>
+							<li>
+								<a href="/user/personal_history">
+									<b class="sidebar-icon"><img src="/static/images/icon_authentication.png" width="16" height="16" /></b>
+									<span class="text-normal">历史记录</span>
+								</a>
+							</li>
+							<li>
+								<a href="/user/show_evaluate">
+									<b class="sidebar-icon"><img src="/static/images/icon_news.png" width="16" height="16" /></b>
+									<span class="text-normal">用户评分</span>
+								</a>
+							</li>
+							<li>
+								<a href="/user/recommend_movie">
+									<b class="sidebar-icon"><img src="/static/images/icon_gold.png" width="16" height="16" /></b>
+									<span class="text-normal">用户推荐</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="view-product">
+				<div class="manage account-manage">
+					<div class="manage-head">
+						<h6 class="layout padding-left manage-head-con">账号管理</h6>
+					</div>
+					<dl class="account-basic clearfix">
+						<dt class="fl">
+						<p class="account-head">
+							<img src="/static/images/y.jpg">
+						</p>
+						</dt>
+						<dd class="fl margin-large-left margin-small-top">
+						<p class="text-small">
+							<span class="show fl base-name">会员账号</span>:<span class="margin-left">{{ user.username }} </span>
+						</p>
+						<p class="text-small">
+							<span class="show fl base-name">认证状态</span>:
+							<span class="margin-left">已认证</span>
+							<!-- <a class="margin-left text-main text-underline" href="#">立即认证</a> -->
+						</p>
+						</dd>
+					</dl>
+					<div class="account-basic clearfix">
+						<span class="fl show text-small">您当前的账号安全程度</span>
+						<div class="progress-bar fl margin-large-left margin-large-35">
+							<div style="background: rgb(255, 153, 0) none repeat scroll 0% 0%; width: 180px;" data-width="100">
+							</div>
+						</div>
+						<span class="fl show text-small">安全级别: <span style="color: rgb(255, 153, 0);" class="leval-safe">强</span></span>
+					</div>
+					<ul class="accound-bund">
+						<li class="clearfix">
+						<span class="bund-class">登录密码</span>
+						<span class="w45">安全性高的密码可以使账号更安全，建议您定期更换密码，设置一个包含字母，符号或数字中至少两项且长度超过6位的密码。</span>
+						<span class="fr margin-large-right">
+						<i class="icon icon-been-set fl"></i>
+						<em class="margin-right text-green-deep">已设置</em>
+						            		|
+						<a href="#OpenWindow" rel="leanModal" class="button-word1 margin-left">修改</a>
+						</span>
+						</li>
+						<li class="clearfix">
+						<span class="bund-class">邮箱绑定</span>
+						<span class="w45">绑定邮箱可以用于安全验证、找回密码等重要操作</span>
+						<span class="fr margin-large-right">
+						<i class="icon icon-been-set fl"></i>
+						<em class="margin-right text-green-deep">已设置</em>
+						            					            		|
+						<a href="#OpenWindow1" rel="leanModal" class="button-word1 margin-left">修改</a>
+						</span>
+						</li>
+					</ul>
+				</div>
+				<div id="OpenWindow">
+					<div id="signup-ct">
+						<div id="OpenWindow-header">
+							<h2>
+								修改密码</h2>
+							<a href="#" class="modal_close"></a>
+						</div>
+						<div class="txt-fld">
+							<label>
+								旧密码：</label>
+							<input type="password" id="old_pass" />
+						</div>
+						<div class="txt-fld">
+							<label>
+								新密码：</label>
+							<input type="password" id="new_pass" />
+						</div>
+						<div class="txt-fld">
+							<label>
+								确认密码：</label>
+							<input type="password" id="ensure_pass" />
+						</div>
+						<span id="message" style="margin-left: 100px;color: red;"></span>
+						<div class="btn-fld">
+							<button id="Modify_pass">
+								确认修改 </button>
+						</div>
+					</div>
+    		</div>
+			<div id="OpenWindow1">
+					<div id="signup-ct1">
+						<div id="OpenWindow-header1">
+							<h2>
+								修改绑定邮箱</h2>
+							<a href="#" class="modal_close"></a>
+						</div>
+						<form action="">
+						<div class="txt-fld">
+							<label>
+								新邮箱：</label>
+							<input type="text" id="email" />
+						</div>
+						<div class="btn-fld">
+							<button id="Modify_email">
+								确认修改 </button>
+						</div>
+						</form>
+					</div>
+    		</div>
+		<script>
+			$(".sidebar-title").live('click', function() {
+				if ($(this).parent(".sidebar-nav").hasClass("sidebar-nav-fold")) {
+					$(this).next().slideDown(200);
+					$(this).parent(".sidebar-nav").removeClass("sidebar-nav-fold");
+				} else {
+					$(this).next().slideUp(200);
+					$(this).parent(".sidebar-nav").addClass("sidebar-nav-fold");
+				}
+			});
+		</script>
+	</body>
+
+</html>

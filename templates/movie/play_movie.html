@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>播放电影</title>
+    <meta name="referrer" content="no-referrer"><!--可引用网络地址图片-->
+    <!--js-->
+    <link rel="stylesheet" href="/static/css/video-js.min.css">
+    <script src="/static/js/video.min.js"></script>
+    <style type="text/css">
+        .video-js { /* 给.video-js设置字体大小以统一各浏览器样式表现，因为video.js采用的是em单位 */
+            font-size: 14px;
+        }
+
+        .video-js button {
+            outline: none;
+        }
+
+        .video-js.vjs-fluid,
+        .video-js.vjs-16-9,
+        .video-js.vjs-4-3 { /* 视频占满容器高度 */
+            height: 100%;
+            background-color: #161616;
+        }
+
+        .vjs-poster {
+            background-color: #161616;
+        }
+
+        .video-js .vjs-big-play-button { /* 中间大的播放按钮 */
+            font-size: 2.5em;
+            line-height: 2.3em;
+            height: 2.5em;
+            width: 2.5em;
+            -webkit-border-radius: 2.5em;
+            -moz-border-radius: 2.5em;
+            border-radius: 2.5em;
+            background-color: rgba(115, 133, 159, .5);
+            border-width: 0.12em;
+            margin-top: -1.25em;
+            margin-left: -1.75em;
+        }
+
+        .video-js.vjs-paused .vjs-big-play-button { /* 视频暂停时显示播放按钮 */
+            display: block;
+        }
+
+        .video-js.vjs-error .vjs-big-play-button { /* 视频加载出错时隐藏播放按钮 */
+            display: none;
+        }
+
+        .vjs-loading-spinner { /* 加载圆圈 */
+            font-size: 2.5em;
+            width: 2em;
+            height: 2em;
+            border-radius: 1em;
+            margin-top: -1em;
+            margin-left: -1.5em;
+        }
+
+        .video-js .vjs-control-bar { /* 控制条默认显示 */
+            display: flex;
+        }
+
+        .video-js .vjs-time-control {
+            display: block;
+        }
+
+        .video-js .vjs-remaining-time {
+            display: none;
+        }
+
+        .vjs-button > .vjs-icon-placeholder:before { /* 控制条所有图标，图标字体大小最好使用px单位，如果使用em，各浏览器表现可能会不大一样 */
+            font-size: 22px;
+            line-height: 1.9;
+        }
+
+        .video-js .vjs-playback-rate .vjs-playback-rate-value {
+            line-height: 2.4;
+            font-size: 18px;
+        }
+
+        /* 进度条背景色 */
+        .video-js .vjs-play-progress {
+            color: #ffb845;
+            background-color: #ffb845;
+        }
+
+        .video-js .vjs-progress-control .vjs-mouse-display {
+            background-color: #ffb845;
+        }
+
+        .vjs-mouse-display .vjs-time-tooltip {
+            padding-bottom: 6px;
+            background-color: #ffb845;
+        }
+
+        .video-js .vjs-play-progress .vjs-time-tooltip {
+            display: none !important;
+        }
+    </style>
+    <!-- for-mobile-apps -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content=""/>
+    <script type="application/x-javascript"> addEventListener("load", function () {
+        setTimeout(hideURLbar, 0);
+    }, false);
+
+    function hideURLbar() {
+        window.scrollTo(0, 1);
+    } </script>
+    <!-- //for-mobile-apps -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="/static/css/medile.css" rel='stylesheet' type='text/css'/>
+    <link href="/static/css/single.css" rel='stylesheet' type='text/css'/>
+    <link rel="stylesheet" href="/static/css/contactstyle.css" type="text/css" media="all"/>
+    <link rel="stylesheet" href="/static/css/faqstyle.css" type="text/css" media="all"/>
+    <!-- news-css -->
+    <link rel="stylesheet" href="/static/news-css/news.css" type="text/css" media="all"/>
+    <!-- //news-css -->
+    <!-- list-css -->
+    <link rel="stylesheet" href="/static/list-css/list.css" type="text/css" media="all"/>
+    <!-- //list-css -->
+    <!-- font-awesome icons -->
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css"/>
+    <!-- //font-awesome icons -->
+    <!-- js -->
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <!-- //js -->
+    <!-- start-smoth-scrolling -->
+    <script type="text/javascript" src="/static/js/move-top.js"></script>
+    <script type="text/javascript" src="/static/js/easing.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            $(".scroll").click(function (event) {
+                event.preventDefault();
+                $('html,body').animate({scrollTop: $(this.hash).offset().top}, 1000);
+            });
+        });
+    </script>
+    <!-- start-smoth-scrolling -->
+    <link href="/static/css/owl.carousel.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/static/js/owl.carousel.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#owl-demo").owlCarousel({
+
+                autoPlay: 3000, //Set AutoPlay to 3 seconds
+
+                items: 5,
+                itemsDesktop: [640, 5],
+                itemsDesktopSmall: [414, 4]
+
+            });
+
+        });
+    </script>
+    <script src="/static/js/simplePlayer.js"></script>
+    <script>
+        $("document").ready(function () {
+            $("#video").simplePlayer();
+        });
+    </script>
+	<script>
+		$(function () {
+			$('#comment_button').click(function () {
+				//1、 获取评论框内容
+				comment = $('#comment').val()
+				var re = new RegExp("^[ ]+$")
+				if(comment=='' || re.test(comment)){
+					alert('评论不能为空或空格！')
+				}else{
+					$('#comment').val('')
+					$.ajax({
+						'url': '/user/comment_movie?id=' + '{{ movie.id }}' + '&type=' + '{{ movie.type }}',
+						'type': 'get',
+						'dataType': 'json',
+						'data': {'comment': comment},
+						'success': function (data) {
+							$('#comment_area').html("")
+							var dataStr = "";
+							for (var i = 0; i < data.data.length; i++) {
+								comment = data.data[i]
+								dataStr += '<div class="media"> <h5>' + comment[0] + '</h5> <div class="media-left"> <a href="#"> <img src="/static/images/y.jpg" title="' + comment[0] + '" alt=" " height="50px" width="50px" /> </a> </div> <div class="media-body"> <p>' + comment[1] + '</p> <span>发布时间 :<a href="#">' + comment[2] + '</a></span> </div></div>'
+							}
+							$('#comment_area').html(dataStr)
+						}
+					})
+				}
+			})
+		})
+	</script>
+
+</head>
+
+<body>
+<!-- header -->
+	<div class="header">
+    <div class="container">
+        <div class="w3layouts_logo">
+            <a href="/movie/index"><h1>猜你<span>喜欢</span></h1></a>
+        </div>
+        <div class="w3_search">
+				<input type="text" name="Search" placeholder="欢迎来到猜你喜欢电影网" readonly="readonly">
+				<input type="submit" value="观看" disabled="disabled">
+			</div>
+        <div class="w3l_sign_in_register">
+				<ul>
+					{% if username %}
+
+					{% else %}
+						<li><a href="#" data-toggle="modal" data-target="#myModal">登录</a></li>
+					{% endif %}
+				</ul>
+			</div>
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+<!-- //header -->
+<!-- bootstrap-pop-up -->
+	<div class="modal video-modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					登 录 & 注 册
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				</div>
+				<section>
+					<div class="modal-body">
+						<div class="w3_login_module">
+							<div class="module form-module">
+							  <div class="toggle"><i class="fa fa-times fa-pencil"></i>
+								<div class="tooltip">点击切换</div>
+							  </div>
+							  <div class="form">
+								<h3>登录账号</h3>
+								<form action="/user/login" method="post">
+									{% csrf_token %}
+								  <input type="text" name="Username" placeholder="用户名" required="">
+								  <input type="password" name="Password" placeholder="密码" required="">
+								  <input type="submit" value="登录">
+								</form>
+							  </div>
+							  <div class="form">
+								<h3>注册账号</h3>
+								<form action="/user/register" method="post">
+									{% csrf_token %}
+								  <input type="text" name="Username" placeholder="用户名" required="">
+								  <input type="password" name="Password" placeholder="密码" required="">
+								  <input type="text" name="Sex" placeholder="性别" required="">
+								  <input type="text" name="Age" placeholder="年龄" required="">
+								  <input type="email" name="Email" placeholder="电子邮箱" required="">
+								  <input type="submit" value="注册">
+								</form>
+							  </div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</div>
+		</div>
+	</div>
+	<script>
+		$('.toggle').click(function(){
+		  // Switches the Icon
+		  $(this).children('i').toggleClass('fa-pencil');
+		  // Switches the forms
+		  $('.form').animate({
+			height: "toggle",
+			'padding-top': 'toggle',
+			'padding-bottom': 'toggle',
+			opacity: "toggle"
+		  }, "slow");
+		});
+	</script>
+<!-- //bootstrap-pop-up -->
+<!-- nav -->
+	<div class="movies_nav">
+		<div class="container">
+			<nav class="navbar navbar-default">
+				<div class="navbar-header navbar-left">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
+					<nav>
+						<ul class="nav navbar-nav">
+							<li class="dropdown"><a href="/movie/index">主页</a></li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">类型 <b class="caret"></b></a>
+								<ul class="dropdown-menu multi-column columns-3">
+									<li>
+									<div class="col-sm-4">
+										<ul class="multi-column-dropdown">
+											<li><a href="/movie/movie_type/?tag=爱情">爱情</a></li>
+											<li><a href="/movie/movie_type/?tag=喜剧">喜剧</a></li>
+											<li><a href="/movie/movie_type/?tag=经典">经典</a></li>
+										</ul>
+									</div>
+									<div class="col-sm-4">
+										<ul class="multi-column-dropdown">
+											<li><a href="/movie/movie_type/?tag=科幻">科幻</a></li>
+											<li><a href="/movie/movie_type/?tag=成长">成长</a></li>
+											<li><a href="/movie/movie_type/?tag=动作">动作</a></li>
+										</ul>
+									</div>
+									<div class="col-sm-4">
+										<ul class="multi-column-dropdown">
+											<li><a href="/movie/movie_type/?tag=悬疑">悬疑</a></li>
+											<li><a href="/movie/movie_type/?tag=恐怖">恐怖</a></li>
+											<li><a href="/movie/movie_type/?tag=冷门佳片">冷门佳片</a></li>
+										</ul>
+									</div>
+									<div class="clearfix"></div>
+									</li>
+								</ul>
+							</li>
+							<li><a href="/movie/tv_type">电视连续剧</a></li>
+							<li><a href="/movie/new_publish">最新上映</a></li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">地区 <b class="caret"></b></a>
+								<ul class="dropdown-menu multi-column columns-3">
+									<li>
+										<div class="col-sm-4">
+											<ul class="multi-column-dropdown">
+												<li><a href="/movie/movie_type/?tag=华语">华语</a></li>
+												<li><a href="/movie/movie_type/?tag=韩国">韩国</a></li>
+
+											</ul>
+										</div>
+										<div class="col-sm-4">
+											<ul class="multi-column-dropdown">
+												<li><a href="/movie/movie_type/?tag=欧美">欧美</a></li>
+											</ul>
+										</div>
+										<div class="col-sm-4">
+											<ul class="multi-column-dropdown">
+												<li><a href="/movie/movie_type/?tag=日本">日本</a></li>
+											</ul>
+										</div>
+										<div class="clearfix"></div>
+									</li>
+								</ul>
+							</li>
+							<li><a href="/movie/search_list">搜索电影</a></li>
+							<li><a href="/user/personal_index">个人中心</a></li>
+						</ul>
+					</nav>
+				</div>
+			</nav>
+		</div>
+	</div>
+<!-- single -->
+<div class="single-page-agile-main">
+<div class="container">
+		<!-- /w3l-medile-movies-grids -->
+			<div class="agileits-single-top">
+				<ol class="breadcrumb">
+				  	<li><a href="/movie/index">主页</a></li>
+                	<li class="active">播放界面</li>
+				</ol>
+			</div>
+			<div class="single-page-agile-info">
+                   <!-- /movie-browse-agile -->
+                           <div class="show-top-grids-w3lagile">
+				<div class="col-sm-8 single-left">
+					<div class="song">
+						<div class="song-info">
+							<h3>{{ movie.name }}</h3>
+					</div>
+						<!-- poster /static/images/news1.jpg-->
+						 <div class="video-grid-single-page-agileits">
+                            <div data-video="dLmKio67pVQ" id="video">
+                                <video id="videoPlay"
+                                       class="video-js vjs-subtitles vjs-big-play-centered vjs-fluid"
+                                       controls preload="auto" width="745" height="500"
+                                      poster=""
+                                       data-setup='{"example_option":true}'>
+                                    <source src="{{ movie.play_url }}"
+                                            type="video/mp4"/>
+                                </video>
+                            </div>
+                        </div>
+					</div>
+					<div class="clearfix"> </div>
+
+					<div class="all-comments">
+						<div class="all-comments-info">
+							<a href="#">评论</a>
+							<div class="agile-info-wthree-box">
+								{% if username %}
+									<form>
+										<textarea id="comment" placeholder="请输入你的评论"></textarea>
+										<input id="comment_button" type="button" value="提交" style="outline: none;font-style: normal;padding: 8px 20px;background: #ff8d1b;font-size: 14px;color: #fff;display: block;border: none;">
+										<div class="clearfix"> </div>
+									</form>
+								{% else %}
+									<span>请<a href="#" data-toggle="modal" data-target="#myModal" style="color: #FF8D1B"> 登录 </a>后再进行评论!</span>
+								{% endif %}
+							</div>
+						</div>
+						<div class="media-grids" id="comment_area">
+							{% for comment in comment_list %}
+								<div class="media">
+									<h5>{{ comment.user.username }}</h5>
+									<div class="media-left">
+										<a href="#">
+											<img src="/static/images/y.jpg" title="{{ comment.user.username }}" alt=" " height="50px" width="50px" />
+										</a>
+									</div>
+									<div class="media-body">
+										<p>{{ comment.comment }}</p>
+										<span>发布时间 :<a href="#"> {{ comment.ctime | date:"Y-m-d H:i" }}</a></span>
+									</div>
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 single-right">
+					<h3>类似电影</h3>
+					<div class="single-grid-right">
+						{% for movie in similarity_movies %}
+							<div class="single-right-grids">
+							<div class="col-md-4 single-right-grid-left">
+								<a href="/movie/movie_detail/{{ movie.id }}{% if movie.type != '豆瓣top250' %}?tag=type{% endif %}"><img src="{{ movie.pic_url }}" alt="" /></a>
+							</div>
+							<div class="col-md-8 single-right-grid-right">
+								<a href="/movie/movie_detail/{{ movie.id }}{% if movie.type != '豆瓣top250' %}?tag=type{% endif %}" class="title"> {{ movie.name }}</a>
+								<p class="author"><a href="#" class="author">导演：{{ movie.director }}</a></p>
+								<p class="views">{{ movie.evaluate_num }}</p>
+							</div>
+							<div class="clearfix"> </div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+
+
+
+				<div class="clearfix"> </div>
+			</div>
+				<!-- //movie-browse-agile -->
+				<!--body wrapper start-->
+			<div class="w3_agile_banner_bottom_grid">
+                <div id="owl-demo" class="owl-carousel owl-theme">
+					{% for movie in movies %}
+						<div class="item">
+							<div class="w3l-movie-gride-agile w3l-movie-gride-agile1">
+								<a href="/movie/movie_detail/{{ movie.id }}" class="hvr-shutter-out-horizontal"><img src="{{ movie.pic_url }}" title="{{ movie.name }}" alt=" " width="182px" height="268px" />
+									<div class="w3l-action-icon"><i class="fa fa-play-circle" aria-hidden="true"></i></div>
+								</a>
+								<div class="mid-1 agileits_w3layouts_mid_1_home">
+									<div class="w3l-movie-text">
+										<h6><a href="/movie/movie_detail/{{ movie.id }}">{{ movie.name }}</a></h6>
+									</div>
+									<div class="mid-2 agile_mid_2_home">
+										<h6>{{ movie.evaluate_num }}</h6>
+										<p>{{ movie.pub_time }}</p>
+										<div class="block-stars">
+											<ul class="w3l-ratings">
+												{# 星级显示TODO #}
+												<li><a href="#"><i class="fa fa-star" aria-hidden="true"></i></a></li>
+												<li><a href="#"><i class="fa fa-star" aria-hidden="true"></i></a></li>
+												<li><a href="#"><i class="fa fa-star" aria-hidden="true"></i></a></li>
+												<li><a href="#"><i class="fa fa-star" aria-hidden="true"></i></a></li>
+												<li><a href="#"><i class="fa fa-star-half-o" aria-hidden="true"></i></a></li>
+												<li>{{ movie.star }}</li>
+											</ul>
+										</div>
+										<div class="clearfix"></div>
+									</div>
+								</div>
+								<div class="ribben">
+									<p>NEW</p>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+            </div>
+		<!--body wrapper end-->
+
+
+				</div>
+				<!-- //w3l-latest-movies-grids -->
+			</div>
+		</div>
+	<!-- //w3l-medile-movies-grids -->
+
+<!-- footer -->
+<div class="footer">
+		<div class="container">
+			<div class="w3ls_footer_grid">
+				<div class="col-md-6 w3ls_footer_grid_left">
+					<div class="w3ls_footer_grid_left1">
+						<h2>猜你喜欢</h2>
+						<div class="w3ls_footer_grid_left1_pos">
+							<form action="#" method="post">
+								<input type="email" name="email" placeholder="电影网" readonly="readonly">
+								<input type="submit" value="观看" disabled>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6 w3ls_footer_grid_right">
+					<a href="/movie/index"><h2>猜你<span>喜欢</span></h2></a>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+			<div class="col-md-5 w3ls_footer_grid1_left">
+				<p>Copyright &copy; 2020 Welcome to movie web - 欢迎来到猜你喜欢电影网 </p>
+			</div>
+		</div>
+	</div>
+<!-- //footer -->
+<!-- Bootstrap Core JavaScript -->
+<script src="/static/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- //Bootstrap Core JavaScript -->
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+</body>
+</html>
