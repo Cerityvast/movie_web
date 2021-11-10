@@ -1,1 +1,1 @@
-Movie Recommender System by Hcxch
+Movie recommendation system implemented by Django
